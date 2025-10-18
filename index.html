@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Lesen B2-الالب - Teil 1</title>
+<style>
+body { font-family: Arial, sans-serif; max-width: 1000px; margin: 30px auto; line-height: 1.6; background: #f4f4f4; color: #333; }
+h1 { text-align: center; color: #2c3e50; }
+.quiz-container { background: #FFE5B4; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+.question-text { margin-top: 10px; font-weight: bold; }
+button { display: block; margin: 5px 0; padding: 8px 12px; font-size: 14px; cursor: pointer; border-radius: 5px; border: none; background: #3498db; color: #fff; transition: 0.3s; text-align: right; white-space: pre-line; }
+button:hover:not(.disabled) { background: #2980b9; }
+button.disabled { background: #bdc3c7; cursor: default; }
+.correct { background-color: #2ecc71 !important; color: #fff !important; }
+.wrong { background-color: #e74c3c !important; color: #fff !important; }
+#show-result { margin-top: 20px; background: #2ecc71; color: #fff; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+#result-container { display: none; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>Lesen B2 - الالب - Teil 1</h1>
+
+<div id="quiz-area"></div>
+<button id="show-result">إظهار النتيجة والتصحيح</button>
+
+<div id="result-container">
+    <h2>نتيجتك</h2>
+    <p id="score"></p>
+</div>
+
+<script>
+const quiz = [
+    {
+        text: `Für Raucher wird es an der Universität in Köln ab dem kommenden Wintersemester eng. Denn nach zahllosen Beschwerden sowohl vom Personal der Universität als auch von Studierenden erweiterte nun die Universitätsverwaltung das bereits bestehende Rauchverbot. Bisher
+erstreckte es sich nur auf Hörsäle und Seminarräume. Doch kaum waren die Veranstaltungen zu Ende, fand man sich in den Fluren, Foyers undm Cafeterias eingehüllt in dicke Schwaden von Zigarettenqualm wieder. Dieser
+Zustand war vielen Nichtrauchern schon seit Längerem ein Dorn im Auge. Unterstützt von mehreren Untersuchungsberichten über die Gefahren des passiven Rauchens und angespornt von den guten Erfahrungen, die man an ausländischen Universitäten - vor allem in den USA - mit Rauchverboten gemacht hat, wollten die Nichtraucher diesen Zustand nicht
+länger hinnehmen. Das Rauchverbot gilt nun in allen Gebäuden einschließlich der Toiletten. Die Professoren und Studierenden, die das Qualmen auch künftig nicht lassen können, werden in ihren Rauchpausen im kommenden Winter irgendwo auf den Campus ganz sicher kalte Füße bekommen..`,
+        options: [
+            "a) Freizeitsport in den Alpen",
+            "b) Mädchen geben mehr Geld für Zigaretten aus als Jungen",
+            "c) Hochgebirge als Skiparadies",
+            "d) Höhenluft - gut fürs Herz /Höhenluft fördert die Gesundheit ",
+            "e) Junge Sportler: weniger suchtanfällig/Vereine wirken positiv auf Jugendliche ",
+            "f) Mit der Zigarette an die frische Luft/Studenten engagieren sich gegen das Rauchen ",
+            "g) Rauchverbot in Sportvereinen",
+            "h) Uni-Campus: rauchfreie Zone eingerichtet",
+            "i) Zigaretten gegen Alleinsein",
+            "j) Zum Leistungssport in die Berge"
+        ],
+        answer: 5
+    },
+    {
+        text: `Urlaub in den Bergen ist sehr gesund. Das fanden jetzt Wissenschaftler am Anatomischen Zentrum der
+Universität Köln heraus. Besonders die Höhenlagen um die 2.000 Meter wirken sich messbar positiv auf die
+Gesundheit aus. Die “dünnere Luft” in Hochgebirgslagen bewirke eine Senkung des Blutdrucks und des
+Pulsschlages, eine verbesserte Leistungsfähigkeit des Herzens und damit eine Stärkung der Funktion von
+Herz, Lunge und Kreislauf. Wichtig sei es aber, in den ersten Tagen auf eine ausreichende Akklimatisierung
+zu achten. Denn etwa eine Woche benötige der Körper, um sich an die neuen klimatischen Bedingungen im
+Gebirge anzupassen. Während dieser Zeit solle man, so die Wissenschaftler, größere körperliche
+Anstrengungen und Extremsport vermeiden. Ab der zweiten Urlaubswoche habe man dann seine volle
+körperliche Leistungsfähigkeit erreicht`,
+        options: [
+           "a) Freizeitsport in den Alpen",
+            "b) Mädchen geben mehr Geld für Zigaretten aus als Jungen",
+            "c) Hochgebirge als Skiparadies",
+            "d) Höhenluft - gut fürs Herz /Höhenluft fördert die Gesundheit ",
+            "e) Junge Sportler: weniger suchtanfällig/Vereine wirken positiv auf Jugendliche ",
+            "f) Mit der Zigarette an die frische Luft/Studenten engagieren sich gegen das Rauchen ",
+            "g) Rauchverbot in Sportvereinen",
+            "h) Uni-Campus: rauchfreie Zone eingerichtet",
+            "i) Zigaretten gegen Alleinsein",
+            "j) Zum Leistungssport in die Berge"
+        ],
+        answer: 3
+    },
+    {
+        text: `Schlechte Haut, übler Atem, leere Brieftasche. Das ist eigentlich ziemlich "uncool". Und doch
+dauert es ziemlich lange, bis junge Raucher begriffen haben, dass Rauchen nicht hält, was viele
+Jugendliche in ihrer Phantasie damit verbinden: Freiheit und Attraktivität - der Glimmstängel
+macht "cool" und begehrenswert. Stress und Leistungsdruck verfliegen angeblich, sobald man nur
+an der Zigarette zieht. Doch das Gegenteil ist der Fall: Die zuerst genannten Negativfolgen stellen
+sich oft schneller ein als gedacht. Häufig ist es aber dann schon zu spät, denn das Entwöhnen von
+der Sucht des Rauchens ist ein langwieriger und oft auch schmerzhafter Weg. Obwohl dies alles
+bekannt ist, finden es in Deutschland fast 50% aller Teenager zwischen 12 und 16 Jahren schick,
+Zigaretten zu konsumieren - ein eindeutig zu großer Anteil, warnen die Gesundheitsbehörden.
+Besonders groß ist der prozentuale Anteil der Raucher übrigens unter den jungen Mädchen. Als
+Raucherinnen fühlen sie sich erwachsen und der Cliquendruck - nahezu alle Freunde und
+Freundinnen rauchen auch - erzeugt oft ein vermeintliches Notwendigkeitsgefühl, auch zu
+rauchen.`,
+        options: [
+           "a) Freizeitsport in den Alpen",
+            "b) Mädchen geben mehr Geld für Zigaretten aus als Jungen",
+            "c) Hochgebirge als Skiparadies",
+            "d) Höhenluft - gut fürs Herz /Höhenluft fördert die Gesundheit ",
+            "e) Junge Sportler: weniger suchtanfällig/Vereine wirken positiv auf Jugendliche ",
+            "f) Mit der Zigarette an die frische Luft/Studenten engagieren sich gegen das Rauchen ",
+            "g) Rauchverbot in Sportvereinen",
+            "h) Uni-Campus: rauchfreie Zone eingerichtet",
+            "i) Zigaretten gegen Alleinsein",
+            "j) Zum Leistungssport in die Berge"
+        ],
+        answer: 1
+    },
+    {
+        text: `Sport im Hochgebirge? Da denkt man zuallererst an Wintersport. Ski fahren, rodeln,
+eislaufen. Doch auch im Sommer ist das Hochgebirge ein Ort, a n dem man sich vielfältig
+sportlich betätigen kann: Wandern, Klettern oder Schwimmen in einem der zahlreichen
+kristallklaren Bergseen erfreuen sich großer Beliebtheit bei Jung und Alt. In Deutschland
+ist Hochgebirgssport vor allem in den Alpenregionen im südlichen Bayern möglich. Es
+muss jedoch nicht unbedingt gleich Deutschlands höchster Berg - die Zugspitze - sein,
+die man als Ziel ansteuert. Auch rund um Oberstdorf, Füssen, Berchtesgaden oder rund
+um den Tegernsee bieten sich viele Möglichkeiten für sportliche Naturliebhaber wie für
+naturverbundene Sportler. Für die zumeist städtischen Urlauber, die hier vor allem Ruhe
+und Erholung vom Alltagsstress suchen, haben die deutschen Alpengebiete außerdem
+den Vorteil, dass man keine weiten Wege zurücklegen muss, wenn einen das Heimweh
+nach der Stadt packt, nach Schwimmhallen, Fußballstadien oder Golfplätzen. Denn für die
+Stadtsportler ist es von keinem Alpenort weiter als eine gute Stunde in die bayerische
+Landeshauptstadt München..`,
+        options: [
+           "a) Freizeitsport in den Alpen",
+            "b) Mädchen geben mehr Geld für Zigaretten aus als Jungen",
+            "c) Hochgebirge als Skiparadies",
+            "d) Höhenluft - gut fürs Herz /Höhenluft fördert die Gesundheit ",
+            "e) Junge Sportler: weniger suchtanfällig/Vereine wirken positiv auf Jugendliche ",
+            "f) Mit der Zigarette an die frische Luft/Studenten engagieren sich gegen das Rauchen ",
+            "g) Rauchverbot in Sportvereinen",
+            "h) Uni-Campus: rauchfreie Zone eingerichtet",
+            "i) Zigaretten gegen Alleinsein",
+            "j) Zum Leistungssport in die Berge"
+        ],
+        answer: 0
+    },
+    {
+        text: `Sport im Hochgebirge?
+Da denkt man zuallererst an Wintersport: Ski fahren, rodeln, eislaufen.
+Doch auch im Sommer ist das Hochgebirge ein Ort, an dem man sich vielfältig sportlich betätigen kann: Wandern, Klettern oder Schwimmen in einem der zahlreichen kristallklaren Bergseen erfreuen sich großer Beliebtheit bei Jung und Alt.
+In Deutschland ist Hochgebirgssport vor allem in den Alpenregionen im südlichen Bayern möglich. Es muss jedoch nicht unbedingt gleich Deutschlands höchster Berg – die Zugspitze – sein, die man als Ziel ansteuert. Auch rund um Oberstdorf, Füssen, Berchtesgaden oder rund um den Tegernsee bieten sich viele Möglichkeiten für sportliche Naturliebhaber wie für naturverbundene Sportler.
+Für die zumeist städtischen Urlauber, die hier vor allem Ruhe und Erholung vom Alltagsstress suchen, haben die deutschen Alpengebiete außerdem den Vorteil, dass man keine weiten Wege zurücklegen muss, wenn einen das Heimweh nach der Stadt packt – nach Schwimmhallen, Fußballstadien oder Golfplätzen. Denn für die Stadtsportler ist es von keinem Alpenort weiter als eine gute Stunde in die bayerische Landeshauptstadt München.`,
+        options: [
+            "a) Freizeitsport in den Alpen",
+            "b) Mädchen geben mehr Geld für Zigaretten aus als Jungen",
+            "c) Hochgebirge als Skiparadies",
+            "d) Höhenluft - gut fürs Herz /Höhenluft fördert die Gesundheit ",
+            "e) Junge Sportler: weniger suchtanfällig/Vereine wirken positiv auf Jugendliche ",
+            "f) Mit der Zigarette an die frische Luft/Studenten engagieren sich gegen das Rauchen ",
+            "g) Rauchverbot in Sportvereinen",
+            "h) Uni-Campus: rauchfreie Zone eingerichtet",
+            "i) Zigaretten gegen Alleinsein",
+            "j) Zum Leistungssport in die Berge"
+        ],
+        answer: 4
+    }
+];
+
+const quizArea = document.getElementById("quiz-area");
+let userAnswers = Array(quiz.length).fill(null);
+
+quiz.forEach((teil, index) => {
+    const container = document.createElement("div");
+    container.className = "quiz-container";
+
+    const textEl = document.createElement("p");
+    textEl.innerText = teil.text;
+    container.appendChild(textEl);
+
+    teil.options.forEach((opt, oIndex) => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = (e) => {
+            const allBtns = e.target.parentElement.querySelectorAll("button");
+            allBtns.forEach(b => {
+                b.classList.remove("disabled");
+                b.disabled = false;
+            });
+
+            userAnswers[index] = oIndex;
+            e.target.classList.add("disabled");
+            e.target.disabled = true;
+        };
+        container.appendChild(btn);
+    });
+
+    quizArea.appendChild(container);
+});
+
+document.getElementById("show-result").onclick = () => {
+    let score = 0;
+    quiz.forEach((teil, index) => {
+        const correct = teil.answer;
+        const selected = userAnswers[index];
+        const container = quizArea.children[index];
+        const buttons = container.querySelectorAll("button");
+
+        buttons.forEach((btn, oIndex) => {
+            btn.disabled = true;
+            if(oIndex === correct) btn.classList.add("correct");
+            if(selected === oIndex && selected !== correct) btn.classList.add("wrong");
+        });
+
+        if(selected === correct) score++;
+    });
+
+    document.getElementById("score").innerText = `النقاط: ${score*5} / 25`;
+    document.getElementById("result-container").style.display = "block";
+};
+</script>
+</body>
+</html>
+<h1>Lesen B2 - الالب - Teil 2</h1>
+
+<div class="quiz-container">
+    <p>
+        Traumfrau und Traummann gesucht<br>
+Den Partner für das Leben finden - für immer mehr Menschen wird dies offenbar immer
+schwieriger. Rund 31 Millionen Männer und Frauen in Deutschland, also mehr als ein Drittel
+der gesamten Bevölkerung, sind alleinstehend. Nicht dass Mann oder Frau wählerischer als in
+früheren Zeiten geworden wäre, es gibt scheinbar ganz einfach immer weniger Gelegenheiten,
+das Ziel einer Partnerschaft oder Ehe zu erreichen.
+Die Menschen haben einfach immer weniger Zeit, sich um ihre ganz natürlichen Wünsche zu
+kümmern. Viele arbeiten weit entfernt von ihrem Wohnort, wechseln die Arbeitsstätte in
+relativ kurzen Abständen, haben für das Privatleben ungünstige Arbeitszeiten mit wenig
+Freizeit - abgesehen vom alljährlichen Urlaub. Dazu kommt, dass eine beträchtliche
+Minderheit der Deutschen nicht bereit ist, sich längerfristig oder gar "lebenslänglich" an
+einen bestimmten Partner zu binden. Immer mehr Menschen leben lieber mit ihren
+Lebensabschnittgefährten zusammen oder sie bevorzugen saisonale Kurzbeziehungen nach
+dem Muster "öfter mal 'ne(n) Neue
+    </p>
+
+    <!-- سؤال 1 -->
+    <p class="question-text">1) Viele Menschen in Deutschland sind unverheiratet, wei</p>
+    <button data-correct="false">a) die Ansprüche bei der Partnerwahl immer weiter steigen.</button>
+    <button data-correct="true">b) die Lebensumstände es erschweren, den Partner oder die Partnerin fürs Leben zu finden.</button>
+    <button data-correct="false">c) )eine Mehrheit ohnehin lieber in zeitlich begrenzten Beziehungen lebt.</button>
+
+    <!-- سؤال 2 -->
+    <p class="question-text">2)Viele Singles suchen sich heute ihre Partner oder Partnerinnen </p>
+    <button data-correct="false">a) am Arbeitsplatz.</button>
+    <button data-correct="false">b) auf Festen</button>
+    <button data-correct="true">c) )in den Medien.</button>
+
+
+    <!-- سؤال 3 -->
+    <p class="question-text">3)  Im Radio werden</p>
+    <button data-correct="false">a) an Samstagen und Sonntagen Partner vermitteln</button>
+    <button data-correct="true">b) jeden Tag Heiratswünsche gesendet.</button>
+    <button data-correct="false">c) täglich Hochzeitsglückwünsche gesendet.</button>
+
+    <!-- سؤال 4 -->
+    <p class="question-text">4)In Kontaktanzeigen.</p>
+    <button data-correct="true">a) beschreiben sich Partnersuchende oft im Rahmen konventioneller Rollenerwartungen.</button>
+    <button data-correct="false">b) suchen die meisten Männer moderne, attraktive Frauen.</button>
+    <button data-correct="false">c) werden recht häufig die passenden Partner fürs Leben gefunden.</button>
+
+ <!-- سؤال 4 -->
+    <p class="question-text">4 معدل)Ein Forscher hat herausgefunden ' dass </p>
+    <button data-correct="true">a) )klassische Rollenbilder bei der Selbstdarstellung in Kontaktanzeigen weiterhin
+stark verbreitet sind.</button>
+    <button data-correct="false">b)sich überraschenderweise immer mehr Menschen ehrlich in ihren Kontaktanzeigen
+beschreiben.</button>
+    <button data-correct="false">c) )viele Kontaktanzeigen eine hohe Erfolgsquote aufweisen.</button>
+
+   <!-- سؤال 5 -->
+    <p class="question-text">5) Wer eine Kontaktanzeige aufgibt, sollte</p>
+    <button data-correct="false">a) jemanden suchen mit möglichst ähnlichen Eigenschaften.</button>
+    <button data-correct="false">b) sich werbewirksam präsentieren können.</button>
+    <button data-correct="true">c) zunächst eine Selbstanalyse vornehmen.</button>
+
+
+    <p class="feedback"></p>
+</div>
+
+<!-- زر النتيجة النهائية -->
+<div style="background:#fff;padding:20px;margin-top:20px;border-radius:8px;">
+    <button id="show-result-2">إظهار النتيجة النهائية للتمرين 2</button>
+    <p id="score-2" style="font-weight:bold;"></p>
+</div>
+
+<script>
+document.querySelectorAll(".quiz-container").forEach(container => {
+    container.querySelectorAll("button[data-correct]").forEach(btn => {
+        btn.onclick = () => {
+            const siblings = btn.parentElement.querySelectorAll("button[data-correct]");
+            siblings.forEach(s => s.classList.remove("selected"));
+            btn.classList.add("selected");
+        };
+    });
+});
+
+document.getElementById("show-result-2").onclick = function() {
+    const correctButtons = document.querySelectorAll('.quiz-container button[data-correct="true"]');
+    const allButtons = document.querySelectorAll('.quiz-container button[data-correct]');
+    let score = 0;
+
+    correctButtons.forEach(btn => {
+        if (btn.classList.contains("selected")) {
+            score++;
+        }
+    });
+
+    allButtons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.correct === "true") {
+            btn.style.backgroundColor = "lightgreen";
+        } else if (btn.classList.contains("selected") && btn.dataset.correct === "false") {
+            btn.style.backgroundColor = "#ff7f7f";
+        }
+    });
+
+    const total = correctButtons.length;
+    document.getElementById("score-2").textContent = `النقاط: ${score * 5} / ${total * 5}`;
+};
+</script>
+
+<div id="quiz-area-3"></div>
+</div>
+<body>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Lesen B2 - الالب - Teil 3</title>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background-color: #f5f5f5; }
+h1 { text-align: center; margin-bottom: 20px; }
+.question { background-color: #ffe0b2; padding: 15px; margin-bottom: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.question p { margin-bottom: 10px; }
+.question label { display: block; margin-bottom: 5px; cursor: pointer; background-color: #fff; padding: 5px; border-radius: 3px; }
+.question label.selected { background-color: #ddd; }
+.question label.correct { background-color: #c8e6c9; }
+.question label.incorrect { background-color: #ffcdd2; }
+button { padding: 10px 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; background-color: #2196F3; color: #fff; }
+button:hover { background-color: #1976D2; }
+#result-container { margin-top: 20px; padding: 15px; background-color: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; }
+</style>
+</head>
+<body>
+
+<h1>Lesen B2 - الالب - Teil 3</h1>
+
+<div id="quiz-area">
+
+<!-- Question 1 -->
+<div class="question" data-correct="3">
+  <h3>Text 1:Gerlinde Kaltenbrunner </h3>
+  <p>Die Österreicherin Gerlinde Kaltenbrunner zählt zu den bekanntesten Bergsteigerinnen der Welt. Als erste Frau hat sie aus eigener Kraft, das heißt ohne Träger und ohne Sauerstoff, alle 14 Achttausender bestiegen. Schon sehr früh entdeckte sie ihre Begeisterung für die Berge ihrer oberösterreichischen Heimat. Ihren ersten Achttausender bestieg sie mit 23 Jahren und seit mehr als zehn Jahren ist sie Profibergsteigerin. In ihrem Vortrag spricht Gerlinge Kaltenbrunner über ihre Erlebnisse und ihre Pläne, über Leidenschaft, Willensstärke, Disziplin und Geduld.
+Höhenbergsteigerin Gerlinde Kaltenbrunner,
+14. Mai, Kulturzentrum, 20.00 Uhr</p>
+
+  <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+
+<!-- Question 2 -->
+<div class="question" data-correct="0">
+<h3>Text 2:Seniorenwohnhaus 'Zur alten Linde"</h3>
+<p>Sie möchten sich gerne ehrenamtlich im sozialen Bereich engagieren? Wir bieten Ihnen eine ganze Reihe von Möglichkeiten dazu: Besuchsdienste, Begleitung und Hilfestellung bei Behördenwegen, Spazierengehen und vieles mehr. Wenn Sie sich für alte Menschen und ihre Geschichten interessieren, wenn sie Einfühlungsvermögen haben und gerne zuhören, dann füllen Sie doch einfach den Fragebogen aus. Anschließend vereinbaren wir einen Termin für ein Erstgespräch.
+Wir freuen uns auf Ihre Nachricht.</p>
+
+  <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+<!-- Question 3 -->
+<div class="question" data-correct="8">
+<h3>Text 3:Neue Studie erschienen</h3>
+<p>Eine neue Studie stellt intensiv betriebenem körperlichem Training kein gutes Zeugnis aus. Dabei hatte die Studie den Aspekte des hohen Gefahrenpotentials und die damit verbundenen Unfallverletzungen bewusst ausgeklammert. Es ging lediglich um die Fragestellung, ob ein Mehr an körperlichem Training auch gesünder sei. Dass regelmäßige Bewegung gesund ist, steht außer Frage. Wer sich täglich körperlich betätigt, senkt sein Risiko für viele Krankheiten wie zum Beispiel Diabetes und Herzerkrankungen. Der Studie zufolge soll extremes Training dieses Risiko allerdings wieder erhöhen.
+Zu den ausführlichen Ergebnissen der Studie gelangen Sie hier.</p>
+ <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+<!-- Question 4 -->
+<div class="question" data-correct="0">
+<h3>Text 4: Historische Fotos für das Stadtjubiläum</h3>
+<p> Für die geplante Ausstellung zum bevorstehenden Stadtjubiläum sucht das Kulturamt noch historische Aufnahmen. Dazu werden alle Bürgerinnen und Bürger ganz herzlich gebeten, alte Bilder und Fotos zu Verfügung zu stellen. Von Interesse sind nicht nur geschichtlich relevante Aufnahmen, sondern auch private Bilder, die vom Leben in unserer Stadt erzählen. Weil in diesem Jahr auch der Städtische Sportclub sein 100-jähriges Bestehen feiert, soll es eine eigene Bilderabteilung geben, die historischen Sportveranstaltungen gewidmet ist. Der Termin und der Ort, zu dem Sie ihre Erinnerungsstücke zur Sichtung bringen können, werden noch bekannt gegeben</p>
+  <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+
+<!-- Question 5 -->
+<div class="question" data-correct="6">
+<h3>Text 5:Nervenkitzel pur: Bungee-Jumping</h3>
+<p>Wir bieten euch unvergessliche Erlebnisse rund um die Extremsportart Bungee-Jumping. In einer traumhaften Landschaft, mehr als 100 Meter über dem Wasser, verschaffen wir euch den ultimativen Kick! im Sommer haben wir wieder täglich von Dienstag bis Sonntag jeweils ab Mittag geöffnet - geeignetes Wetter vorausgesetzt. Für Sprünge am Tag ist eine Reservierung nicht zwingend notwendig. aber besonders bei Schönwetter empfehlenswert. Im August bieten wir auch zwei Nachtsprungtermine an. Für diese müsst ihr mindestens sechs Personen sein und euch auch verbindlich anmelden. Hier geht es zur Terminreservierung. Weitere Infos zu Preisen, Lage und Anfahrt gibt es hier.</p>
+ <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+
+<!-- Question 7 -->
+<div class="question" data-correct="0">
+<h3>Text 6:Freiwillige Feuerwehr</h3>
+<p>Die Freiwilligen Feuerwehren rücken nicht nur an, wenn es brennt, sondern vermitteln auch Wissenswertes zum Thema Brandschutz. Gemeinsam mit Pädagogen hat unsere Freiwillige Feuerwehr ein Programm entwickelt, mit dem sie das Bewusstsein der Kinder und Jugendlichen für das Thema Sicherheit und Gefahrenvermeidung schärfen möchte. Im Rahmen dieses Projektes wurden gemeinsam mit Pädagogen und Pädagoginnen besondere Arbeitsunterlagen für Trainingseinheiten an Bildungsstätten vorbereitet. Interessierte Schulen und Kindergärten haben noch bis Ende April die Möglichkeit, sich zu dem training anzumelden.
+Tel.: 0677-4567489</p>
+
+  <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+
+<!-- Question 8 -->
+<!-- Text 7 -->
+<div class="question" data-correct="2">
+<h3>Text 7:Spektakuläre Feuerwehrübung</h3>
+<p>Übung für den Ernstfall: Gemeinsam mit anderen Einsatzorganisationen veranstaltete die örtliche Feuerwehr eine besonders eindrucksvolle Einsatzübung. Dabei wurde simuliert, dass sich bei einer Führung durch das Rathaus ein Unfall im Turm ereignet und mehrere schwerverletzte Menschen geborgen werden müssen. Nach der Erstversorgung durch einen Notarzt in schwindelnder Höhe gelang es, die angeblichen Schwerverletzten über die Drehleiter zu bergen. Hier der Film des spektakulären Einsatzes.</p>
+
+  <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+
+<!-- Question 9 -->
+<div class="question" data-correct="1">
+<h3>Text 8: Helfer und Helferinnen gesucht</h3>
+<p>Für unseren Halbmarathon am 20. Juli suchen wir noch Freiwillige, die uns bei der Benefizveranstaltung unterstützen möchten. Es gibt viele Bereiche, in denen ihr uns helfen könnt: vom Aufbau von Zuschauerbarrieren über Streckensicherung und Startnummernausgabe bis zum Einsatz an den Verpflegungsposten - jede helfende Hand ist uns herzlich willkommen. Die Veranstaltung dient einem guten Zweck. Die Startgelder und 10 Prozent der Einnahmen aus der Gastronomie gehen an gemeinnützige Vereine unserer Stadt. Anmelden könnt ihr euch auf der Webseite der Stadtverwaltung unter Veranstaltungen/ Halbmarathon/ Freiwillige.</p>
+
+  <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+<!-- Question 9 -->
+<div class="question" data-correct="0">
+<h3>Text 9:Märchenwanderung für Kinder von 8 bis 12 Jahren</h3>
+<p>Wir wandern entlang des Märchenwanderwegs, der durch eine abwechslungsreiche Landschaft führt, mit herrlicher Aussicht auf die Berge. Am Ende des Weges gelangen wir zu einem Wildgehege. Was ihr braucht: feste Schuhe, bei unbeständigen Wetter einen Regenschutz (bitte keine Schirme) und Kleidung, die ruhig schmutzig werden darf.
+Treffpunkt: vor der Kirche, um 10.00 Uhr.
+Dauer: 4 Stunden (Wander- und Erzählzeit).
+Teilnahmegebühr: 17 Euro inklusive Mittagessen.
+Leitung: Märchentante Gerlinde, unterstützt von zwei freiwilligen Helferinnen. Wir wandern ohne Eltern oder Begleitpersonen. </p>
+
+  <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+
+<!-- Question 9 -->
+<div class="question" data-correct="4">
+<h3>Text 10:Aktion "Sauberes Grün"</h3>
+<p>Die Aktion "Sauberes grün" findet dieses Jahr nicht wie bisher an einem einzigen Tag statt, sondern dauert gleich drei Tage. Wir rufen Kindergärten, Schulen und Vereine dazu auf, sich auch dieses Jahr wieder zahlreich an unserer gemeinnützigen Putzaktion zu beteiligen. Ausgerüstet mit Handschuhen und Säcken, werden die Teilnehmerinnen und Teilnehmer Grünflächen, Parks und Spielplätze in der Stadt säubern. Auch Einzelpersonen sind herzlich willkommen! Am Samstag gibt es dann wieder das große Abschlussfest.
+Unsere jährliche Aktion für eine saubere Stadt, dieses Jahr vom 2. bis 4. Mai.
+Anmeldungen bei den städtischen Reinigungsbetrieben: 0240-191980.</p>
+
+  <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+
+
+<!-- Question 10 -->
+<div class="question" data-correct="7">
+<h3>Text 11: Tag der offenen Tür in der städtischen Bücherei</h3>
+<p>Zum Anlass des Welttags des Buches am 23 April möchten wir uns ganz den jungen Lesern widmen.
+Unser Kinderprogramm umfasst auch spannende Lesungen, für die wir noch Freiwillige unter achtzehn suchen. Nicht Lehrer oder Eltern, sondern junge Menschen sollen den ganz Kleinen aus alten und neuen Kinderbüchern vorlesen.
+Wenn du gerne (vor)liest, dann bist du am 23. April bei uns genau richtig! Schick uns einfach deine Daten und einen Lesevorschlag per Mail an: info@buecherei-stadt.com.
+Übrigens: Als kleine Belohnung darfst du dich bei unserem Bücher-Flohmarkt bedienen!</p>
+
+  <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+
+<!-- Question 12 -->
+<div class="question" data-correct="10">
+<h3>Text 12: 150 Jahre Stadtfeuerwehr Zum Jubiläum "150 </h3>
+<p>Stadtfeuerwehr" laden die Feuerwehr und Katastrophenschutz zu einer Leistungsschau. Zu besichtigen: das "brandneue" Löschfahrzeug, das auch dank der großzügigen Unterstützung von Sponsoren angeschafft werden konnte. Weiter: einige abenteuerliche Bergungen durch aktive Mitglieder der Freiwilligen Feuerwehr. Dann eine spektakuläre Löschaktion. Und zum Schluss: Grillfeuer für alle!
+Wann? Samstag 23. Juli ab 16.00 Uhr, am alten Messegelände.
+Die Freiwillige Feuerwehr hofft auf großes Interesse!</p>
+
+ <label><input type="radio" name="q1" value="0"> Keine Antwort</label>
+  <label><input type="radio" name="q1" value="1">Ein Freund von Ihnen möchte gerne bei einer Sportveranstaltung mitarbeiten.</label>
+  <label><input type="radio" name="q1" value="2"> Sie interessieren sich für Videos von besonderen Rettungseinsätzen.</label>
+  <label><input type="radio" name="q1" value="3">  Sie möchten mehr über die psychischen Aspekte von Klettersport erfahren.</label>
+  <label><input type="radio" name="q1" value="4"> Sie möchten mithelfen, ihre Stadt schöner zu machen.</label>
+  <label><input type="radio" name="q1" value="5"> Ihr Vater plant, eine Familienchronik zu schreiben.</label>
+  <label><input type="radio" name="q1" value="6">Sie möchten einem Freund ein besonderes Sporterlebnis schenken.</label>
+  <label><input type="radio" name="q1" value="7">  Ihre sechzehnjährige Cousine beschäftigt sich gerne mit kleinen Kindern.</label>
+  <label><input type="radio" name="q1" value="8"> Sie suchen Informationen zu den gesundheitlichen Auswirkungen von Sport.</label>
+  <label><input type="radio" name="q1" value="9">  Sie suchen Informationen über eine Versicherung gegen Sportverletzungen.</label>
+  <label><input type="radio" name="q1" value="10"> Ihr kleiner Bruder möchte einmal ein Feuerwehrauto aus der Nähe sehen</label>
+</div>
+
+<!-- باقي الصفحة كاملة -->
+
+<button id="checkAnswers">Ergebnisse anzeigen</button>
+
+<script>
+document.getElementById("checkAnswers").addEventListener("click", function() {
+  const questions = document.querySelectorAll(".question");
+
+  questions.forEach(q => {
+    const correctValue = q.dataset.correct;
+    const inputs = q.querySelectorAll("input[type='radio']");
+
+    inputs.forEach(input => {
+      const label = input.parentElement;
+      label.style.backgroundColor = ""; // نحيد أي لون قديم
+
+      // ✅ إذا الجواب هو الصحيح، نوليه أخضر (سواء اختار المستخدم أو لا)
+      if (input.value === correctValue) {
+        label.style.backgroundColor = "lightgreen";
+      }
+
+      // ❌ إذا المستخدم اختار جواب خاطئ، نوليه أحمر
+      if (input.checked && input.value !== correctValue) {
+        label.style.backgroundColor = "lightcoral";
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
